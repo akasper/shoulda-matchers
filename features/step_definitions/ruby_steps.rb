@@ -1,3 +1,28 @@
+When "I generate a new Ruby application" do
+  steps %{
+    When I run `mkdir #{APP_NAME}`
+    And I cd to "#{APP_NAME}"
+    And I run `bundle init`
+  }
+
+  append_to_gemfile "gem 'rake'"
+  append_to_gemfile "gem 'minitest-reporters'"
+
+  steps %{
+    And I set the "BUNDLE_GEMFILE" environment variable to "Gemfile"
+    And I install gems
+  }
+
+  step 'I write to "test/test_helper.rb" with:', <<-EOT
+require "minitest/autorun"
+require "minitest/reporters"
+require "shoulda/context"
+require "shoulda/matchers"
+
+Minitest::Reporters.use!(Minitest::Reporters::SpecReporter.new)
+  EOT
+end
+
 When /^I configure the application to use "([^\"]+)"$/ do |name|
   append_to_gemfile "gem '#{name}'"
   steps %{And I install gems}
